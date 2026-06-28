@@ -1,0 +1,79 @@
+services:
+  app:
+    build:
+      context: ./backend
+    container_name: finance_tracker_api
+    environment:
+      APP_NAME: ${APP_NAME:-Finance Tracker Pro}
+      APP_ENV: ${APP_ENV:-local}
+      APP_DEBUG: ${APP_DEBUG:-true}
+      APP_URL: ${APP_URL:-http://localhost:8000}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      DB_CONNECTION: ${DB_CONNECTION:-mysql}
+      DB_HOST: ${DB_HOST:-mysql}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_DATABASE: ${DB_DATABASE:-finance_tracker_pro}
+      DB_USERNAME: ${DB_USERNAME:-finance_user}
+      DB_PASSWORD: ${DB_PASSWORD:-finance_password}
+      SANCTUM_STATEFUL_DOMAINS: ${SANCTUM_STATEFUL_DOMAINS:-localhost:5173,127.0.0.1:5173}
+      SESSION_DOMAIN: ${SESSION_DOMAIN:-localhost}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-sync}
+    volumes:
+      - ./backend:/var/www/html
+    depends_on:
+      - mysql
+    networks:
+      - finance_tracker
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: finance_tracker_nginx
+    ports:
+      - "${APP_PORT:-8000}:80"
+    volumes:
+      - ./backend:/var/www/html
+      - ./backend/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    networks:
+      - finance_tracker
+
+  mysql:
+    image: mysql:8.4
+    container_name: finance_tracker_mysql
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-finance_tracker_pro}
+      MYSQL_USER: ${DB_USERNAME:-finance_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-finance_password}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - finance_tracker
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: finance_tracker_frontend
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api}
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - nginx
+    networks:
+      - finance_tracker
+
+volumes:
+  mysql_data:
+
+networks:
+  finance_tracker:
+    driver: bridge

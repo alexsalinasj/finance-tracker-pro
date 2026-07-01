@@ -712,6 +712,19 @@ textarea.form-control {
 .ui-select,
 .form-select {
   appearance: none;
+  color-scheme: dark;
+}
+
+.ui-select option,
+.form-select option {
+  color: #f9fafb;
+  background: #111827;
+}
+
+.ui-select option:checked,
+.form-select option:checked {
+  color: #ffffff;
+  background: #4f46e5;
 }
 
 .form-row {

@@ -45,36 +45,20 @@ export type IconOption = {
 
 export const iconOptions: IconOption[] = [
   { value: 'wallet', label: 'Billetera', icon: Wallet },
-  { value: 'banknote', label: 'Efectivo', icon: Banknote },
-  { value: 'credit', label: 'Tarjeta', icon: CreditCard },
-  { value: 'bank', label: 'Banco', icon: Landmark },
-  { value: 'salary', label: 'Salario', icon: BriefcaseBusiness },
-  { value: 'business', label: 'Negocio', icon: Building2 },
-  { value: 'investment', label: 'Inversión', icon: TrendingUp },
-  { value: 'savings', label: 'Ahorro', icon: PiggyBank },
   { value: 'home', label: 'Hogar', icon: Home },
-  { value: 'food', label: 'Comida', icon: Utensils },
-  { value: 'coffee', label: 'Café', icon: Coffee },
-  { value: 'transport', label: 'Transporte', icon: Car },
   { value: 'motorcycle', label: 'Moto', icon: Motorbike },
-  { value: 'bus', label: 'Bus', icon: Bus },
   { value: 'fuel', label: 'Gasolina', icon: Fuel },
-  { value: 'travel', label: 'Viajes', icon: Plane },
+  { value: 'food', label: 'Comida', icon: Utensils },
+  { value: 'transport', label: 'Transporte', icon: Car },
   { value: 'shopping', label: 'Compras', icon: ShoppingBag },
-  { value: 'clothing', label: 'Ropa', icon: Shirt },
-  { value: 'subscriptions', label: 'Suscripciones', icon: Smartphone },
   { value: 'services', label: 'Servicios', icon: Lightbulb },
+  { value: 'subscriptions', label: 'Suscripciones', icon: Smartphone },
   { value: 'health', label: 'Salud', icon: HeartPulse },
-  { value: 'fitness', label: 'Fitness', icon: Dumbbell },
   { value: 'entertainment', label: 'Entretenimiento', icon: Clapperboard },
-  { value: 'game', label: 'Gaming', icon: Gamepad2 },
-  { value: 'music', label: 'Música', icon: Music },
-  { value: 'education', label: 'Educación', icon: GraduationCap },
-  { value: 'book', label: 'Libros', icon: BookOpen },
-  { value: 'gift', label: 'Regalos', icon: Gift },
-  { value: 'insurance', label: 'Seguro', icon: Shield },
-  { value: 'receipt', label: 'Recibos', icon: ReceiptText },
-  { value: 'laptop', label: 'Tecnología', icon: Laptop },
+  { value: 'salary', label: 'Salario', icon: BriefcaseBusiness },
+  { value: 'savings', label: 'Ahorro', icon: PiggyBank },
+  { value: 'bank', label: 'Banco', icon: Landmark },
+  { value: 'credit', label: 'Tarjeta', icon: CreditCard },
 ]
 
 const iconMap: Record<string, LucideIcon> = {
@@ -122,7 +106,25 @@ const iconMap: Record<string, LucideIcon> = {
   wallet: Wallet,
 }
 
-const iconLabels = new Map(iconOptions.map((option) => [option.value, option.label]))
+const iconLabels = new Map([
+  ...iconOptions.map((option) => [option.value, option.label] as const),
+  ['banknote', 'Efectivo'],
+  ['business', 'Negocio'],
+  ['investment', 'Inversion'],
+  ['coffee', 'Cafe'],
+  ['bus', 'Bus'],
+  ['travel', 'Viajes'],
+  ['clothing', 'Ropa'],
+  ['fitness', 'Fitness'],
+  ['game', 'Gaming'],
+  ['music', 'Musica'],
+  ['education', 'Educacion'],
+  ['book', 'Libros'],
+  ['gift', 'Regalos'],
+  ['insurance', 'Seguro'],
+  ['receipt', 'Recibos'],
+  ['laptop', 'Tecnologia'],
+])
 
 export function resolveIcon(icon?: string | null): LucideIcon {
   if (!icon) return Wallet

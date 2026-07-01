@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
-import { Pencil, Plus, Trash2 } from '@lucide/vue'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { ChevronDown, Pencil, Plus, Trash2 } from '@lucide/vue'
 import ApiAlert from '../components/ApiAlert.vue'
 import EmptyState from '../components/EmptyState.vue'
 import CategoryBadge from '../components/ui/CategoryBadge.vue'
@@ -18,12 +18,16 @@ import { iconOptions, resolveIcon, resolveIconLabel } from '../utils/icons'
 const categories = ref<Category[]>([])
 const error = ref('')
 const editingId = ref<number | null>(null)
+const iconPickerOpen = ref(false)
+
 const form = reactive({
   name: '',
   type: 'expense' as CategoryType,
   color: '#4F46E5',
   icon: 'wallet',
 })
+
+const selectedIconOption = computed(() => iconOptions.find((option) => option.value === form.icon) ?? iconOptions[0])
 
 async function load() {
   error.value = ''
@@ -36,6 +40,7 @@ async function load() {
 
 function resetForm() {
   editingId.value = null
+  iconPickerOpen.value = false
   form.name = ''
   form.type = 'expense'
   form.color = '#4F46E5'
@@ -44,10 +49,16 @@ function resetForm() {
 
 function edit(category: Category) {
   editingId.value = category.id
+  iconPickerOpen.value = false
   form.name = category.name
   form.type = category.type
   form.color = category.color
   form.icon = category.icon
+}
+
+function selectIcon(icon: string) {
+  form.icon = icon
+  iconPickerOpen.value = false
 }
 
 async function save() {
@@ -94,7 +105,7 @@ onMounted(load)
     <ChartCard :title="editingId ? 'Editar categoría' : 'Nueva categoría'" subtitle="Color, icono y tipo">
       <form class="form-row" @submit.prevent="save">
         <Input v-model="form.name" class="span-3" label="Nombre" required />
-        <Select v-model="form.type" class="span-3" label="Tipo" required>
+        <Select v-model="form.type" class="span-2" label="Tipo" required>
           <option value="income">Ingreso</option>
           <option value="expense">Gasto</option>
         </Select>
@@ -102,29 +113,36 @@ onMounted(load)
           <span>Color</span>
           <input v-model="form.color" class="ui-input" type="color" />
         </label>
-        <div class="span-4" style="display: grid; align-content: end">
+        <label class="field span-3">
+          <span>Icono</span>
+          <button class="icon-select-trigger" :class="{ active: iconPickerOpen }" type="button" @click="iconPickerOpen = !iconPickerOpen">
+            <span class="icon-choice-mark" :style="{ color: form.color, background: `${form.color}22` }">
+              <component :is="selectedIconOption.icon" :size="18" />
+            </span>
+            <span>{{ selectedIconOption.label }}</span>
+            <ChevronDown class="icon-select-chevron" :class="{ open: iconPickerOpen }" :size="16" />
+          </button>
+        </label>
+        <div class="span-2" style="display: grid; align-content: end">
           <CategoryBadge :category="{ name: form.name || 'Vista previa', color: form.color, icon: form.icon }" />
         </div>
-        <label class="field span-12">
-          <span>Icono</span>
-          <div class="icon-picker" role="radiogroup" aria-label="Seleccionar icono de categoría">
-            <button
-              v-for="option in iconOptions"
-              :key="option.value"
-              class="icon-choice"
-              :class="{ active: form.icon === option.value }"
-              type="button"
-              role="radio"
-              :aria-checked="form.icon === option.value"
-              @click="form.icon = option.value"
-            >
-              <span class="icon-choice-mark" :style="{ color: form.color, background: `${form.color}22` }">
-                <component :is="option.icon" :size="18" />
-              </span>
-              <span>{{ option.label }}</span>
-            </button>
-          </div>
-        </label>
+        <div v-if="iconPickerOpen" class="icon-menu-row span-12" role="radiogroup" aria-label="Seleccionar icono de categoría">
+          <button
+            v-for="option in iconOptions"
+            :key="option.value"
+            class="icon-choice"
+            :class="{ active: form.icon === option.value }"
+            type="button"
+            role="radio"
+            :aria-checked="form.icon === option.value"
+            @click="selectIcon(option.value)"
+          >
+            <span class="icon-choice-mark" :style="{ color: form.color, background: `${form.color}22` }">
+              <component :is="option.icon" :size="18" />
+            </span>
+            <span>{{ option.label }}</span>
+          </button>
+        </div>
         <div class="form-actions span-12">
           <PrimaryButton type="submit">
             <Plus :size="17" />

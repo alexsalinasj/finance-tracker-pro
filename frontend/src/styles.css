@@ -733,10 +733,58 @@ textarea.form-control {
   flex-wrap: wrap;
 }
 
-.icon-picker {
+.icon-menu-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
   gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(139, 92, 246, 0.28);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(180deg, rgba(139, 92, 246, 0.08), rgba(255, 255, 255, 0.018)),
+    rgba(255, 255, 255, 0.035);
+}
+
+.icon-select-trigger {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.055);
+  transition: transform var(--transition), border-color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+.icon-select-trigger:hover,
+.icon-select-trigger.active {
+  border-color: rgba(139, 92, 246, 0.55);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.icon-select-trigger > span:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.icon-select-chevron {
+  flex: 0 0 auto;
+  color: var(--muted);
+  transition: transform var(--transition), color var(--transition);
+}
+
+.icon-select-chevron.open {
+  color: var(--text);
+  transform: rotate(180deg);
 }
 
 .icon-choice {

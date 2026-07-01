@@ -13,7 +13,7 @@ import Select from '../components/ui/Select.vue'
 import { apiErrorMessage } from '../services/api'
 import { categoryService } from '../services/categories'
 import type { Category, CategoryType } from '../types/finance'
-import { resolveIcon } from '../utils/icons'
+import { iconOptions, resolveIcon, resolveIconLabel } from '../utils/icons'
 
 const categories = ref<Category[]>([])
 const error = ref('')
@@ -102,10 +102,29 @@ onMounted(load)
           <span>Color</span>
           <input v-model="form.color" class="ui-input" type="color" />
         </label>
-        <Input v-model="form.icon" class="span-2" label="Icono" required />
-        <div class="span-2" style="display: grid; align-content: end">
+        <div class="span-4" style="display: grid; align-content: end">
           <CategoryBadge :category="{ name: form.name || 'Vista previa', color: form.color, icon: form.icon }" />
         </div>
+        <label class="field span-12">
+          <span>Icono</span>
+          <div class="icon-picker" role="radiogroup" aria-label="Seleccionar icono de categoría">
+            <button
+              v-for="option in iconOptions"
+              :key="option.value"
+              class="icon-choice"
+              :class="{ active: form.icon === option.value }"
+              type="button"
+              role="radio"
+              :aria-checked="form.icon === option.value"
+              @click="form.icon = option.value"
+            >
+              <span class="icon-choice-mark" :style="{ color: form.color, background: `${form.color}22` }">
+                <component :is="option.icon" :size="18" />
+              </span>
+              <span>{{ option.label }}</span>
+            </button>
+          </div>
+        </label>
         <div class="form-actions span-12">
           <PrimaryButton type="submit">
             <Plus :size="17" />
@@ -125,7 +144,7 @@ onMounted(load)
             </span>
             <div class="item-copy">
               <strong>{{ category.name }}</strong>
-              <span>{{ category.icon }}</span>
+              <span>{{ resolveIconLabel(category.icon) }}</span>
             </div>
           </div>
           <span class="status-pill" :class="category.type === 'income' ? 'pill-success' : 'pill-danger'">
